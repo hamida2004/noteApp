@@ -101,20 +101,17 @@ const NoteAdd = (props) => {
 
   const save =async () => {
     console.log('saved');
-    setContent(contentNote);
-    console.log(contentNote)
    await axios.post('http://localhost:3030/notes',{content : contentNote , color : selectedColor } )
     .then((response) => {
       console.log('Note added successfully:', response.data);
-      // Handle any success actions here
+      setNotes(prevNotes => [...prevNotes])
+
     })
     .catch((error) => {
       console.error('Error adding note:', error);
-      // Handle any error actions here
+
     });
     setContent('');
-          window.location.href ='/'
-
   };
  
 
@@ -122,9 +119,10 @@ const NoteAdd = (props) => {
     console.log('id :' , id)
     try {
       await axios.delete(`http://localhost:3030/notes/${id}`);
-      window.location.href = '/'
-      const updatedNotes = [...notes];
-      setNotes(updatedNotes);
+      //window.location.href = '/'
+      //const updatedNotes = [...notes];
+      //setNotes(prevNotes => [...prevNotes, response.data])
+      setNotes(prevNotes => prevNotes.filter(note => note.id !== id));
     } catch (error) {
       console.error('Error deleting note:', error);
       
@@ -156,28 +154,6 @@ const NoteAdd = (props) => {
           </ColorList>
         )}
       </AddNote>
-{/*       
-      {data ? data.reverse().map((note, index) => (
-        <ContentNote key={index} borderColor={note.color}>
-            <ContentInput
-            type='text'
-            placeholder='Content'
-            value={note.content}
-            fontColor={note.color}
-            onChange={(e) => {
-              const updatedNotes = [...data];
-              updatedNotes[index].content = e.target.value;
-              setNotes(updatedNotes.reverse()); // Assuming you have a setNotes function in props to update the notes in the parent component
-            }}
-          />
-          <Check onClick={save}>
-            <FontAwesomeIcon icon={faCheck} />
-          </Check>
-          <Delete onClick={()=>deleteNote(index,note.id)}>
-            <FontAwesomeIcon icon={faXmark} />
-          </Delete>
-        </ContentNote>
-      )) : ' '} */}
       {notes.reverse().map((note, index) => (
         <ContentNote key={index} borderColor={note.color}>
           <ContentInput
@@ -189,7 +165,7 @@ const NoteAdd = (props) => {
               const updatedNotes = [...notes];
               setContentNote(e.target.value);
               updatedNotes[index].content =e.target.value ;
-              setNotes(updatedNotes);
+              
             }}
           />
           <Check onClick={save}>
